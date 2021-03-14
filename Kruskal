@@ -1,0 +1,70 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#include<cstdlib>
+using namespace std;
+const int maxn = 0x3f3f3f;//定义一个无限大的数
+int n, m, fa[maxn];
+struct Edge //定义一个结构体
+{
+	int u, v, w;
+	Edge() {}
+	Edge(int u, int v, int w) :u(u), v(v), w(w) {}
+	bool operator<(Edge tmp) {//重载小于号进行升序排序
+		return w < tmp.w;
+	}
+}e[maxn];
+
+void init() //初始化
+{
+	for (int i = 1; i <= n; i++)fa[i] = i;//先定义它的父节点为它本身
+}
+
+int Find(int x) //查找该节点的父结点
+{
+	if (x == fa[x])//如果它本事就是父节点，那么就返回它自己
+	{
+		return x;
+	}
+	else return fa[x] = Find(fa[x]);//否则递归循环找到它的父节点
+}
+
+void Union(int x, int y) //将两个节点合并起来
+{
+	int fx = Find(x);
+	int fy = Find(y);
+	fa[fx] = fy;
+}
+
+void Kruskal() 
+{
+	int x = 0, y = 0;//x代表边数,y代表最小生成树
+	init();//初始化
+	sort(e, e + m);//对边进行从小到大的排序
+	for (int i = 0; i < m; i++) 
+	{
+		if (Find(e[i].u) != Find(e[i].v)) //如果两个节点的父节点相同则说明成环了
+		{
+			Union(e[i].u, e[i].v);//将两个节点合并
+			printf("V%d - V%d %d\n", e[i].u, e[i].v, e[i].w);
+			x++;//边数+1
+			y += e[i].w;//最小生成树叠加
+		}
+		if (x == n - 1)break;//边数为n-1时结束
+	}
+	printf("%d\n", y);
+}
+
+int main() 
+{
+	scanf_s("%d %d", &n, &m);
+	for (int i = 0; i < m; i++) 
+	{
+		int u, v, w;
+		scanf_s("%d %d %d", &u, &v, &w);
+		e[i] = Edge(u, v, w);
+	}
+	Kruskal();
+	return 0;
+}
