@@ -1,0 +1,53 @@
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+int n;
+double dmin;
+struct point {//采用结构体存储方便
+	double x, y;
+}P[100010], S[100010];//即为P1和Pr子集
+bool cmpx(point p, point q) {
+	return p.x < q.x;
+}
+bool cmpy(point p, point q) {
+	return p.y < q.y;
+}
+double length(point p, point q) {//求两点距离
+	return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+}
+double EfficientClosesPair(int start, int end) {
+	if (end - start == 1) {//在三个点以内
+		return length(P[start], P[end]);
+	}
+	else if (end - start == 2) {//三个点时
+		return min(length(P[start], P[start + 1]), min(length(P[start + 1], P[end]), length(P[start], P[end])));
+	}
+	else {//分治策略
+		int mid = (start + end) / 2;
+		double dmin = min(EfficientClosesPair(start, mid), EfficientClosesPair(mid + 1, end));
+		int f = 0;
+		for (int i = start; i <= f; i++) {//将P中所有点x坐标和P[mid].x比较，将差值小于d的点存入S
+			if (fabs(P[i].x - P[mid].x) <= dmin) {
+				f++;
+				S[f] = P[i];
+			}
+		}
+		sort(S + 1, S + f + 1, cmpy);
+		for (int i = 1; i <= f; i++) {
+			for (int j = i + 1; j <= f && j < i + 6; j++) {
+				dmin = min(dmin, length(S[i], S[j]));
+			}
+		}
+		return dmin;
+	}
+}
+int main() {
+	scanf_s("%d", &n);
+	for (int i = 1; i <= n; i++) {
+		cin >> P[i].x >> P[i].y;
+	}
+	sort(P + 1, P + 1 + n, cmpx);//先进行排序
+	cout << EfficientClosesPair(1, n);
+	system("pause");
+}
