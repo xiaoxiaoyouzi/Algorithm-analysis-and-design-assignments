@@ -1,0 +1,33 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int main() {
+	int t[10] = { 1,5,2,10,3 };
+	int mid = 0, num = 0;
+	for (int i = 0; i < 5; i++) {
+		num += t[i];
+	}
+	mid = num/2;
+	int sum[5][100] = { 0, }, i, j;
+	for (i = 1; i < 5; i++) 
+	{
+		for (j = 1; j <= mid; j++) 
+		{
+			if (j - t[i] >= 0) 
+			{//当时间到的时候正好有空闲机器就直接投入使用
+				sum[i][j] = max(sum[i - 1][j], sum[i - 1][j - t[i]] + t[i]);
+			}
+			else
+			{//当时间不够时就进入等待
+				sum[i][j] = sum[i - 1][j];
+			}
+			printf("%d ",sum[i][j]);
+		}
+		printf("\n");
+	}
+	int len1 = sizeof(sum) / sizeof(int);
+	int len2 = sizeof(sum[0]) / sizeof(int);
+	int len3 = len1 / len2;
+	printf("%d", num - sum[4][len3 - 1]);
+	return 0;
+}
